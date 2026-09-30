@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% comment %} Página de inicio: resumen del proyecto y matriz de endpoints por rol. {% endcomment %}
+
+{% block contenido %}
+  <h2>API REST — Proyecto 4: Reservas de Pasajes de Buses (Transporte)</h2>
+  <p>
+    Backend construido con Django REST Framework y PostgreSQL. Autenticación JWT con claim de rol
+    (<code>PASAJERO</code> / <code>ADMIN_FLOTA</code>), carro de pasajes persistente en base de datos,
+    checkout con verificación atómica de asientos y emisión de boletos con código UUID.
+  </p>
+  <p>Documentación interactiva: <a href="/api/docs/">/api/docs/</a></p>
+
+  <h3>Matriz de roles y permisos</h3>
+  <div class="tabla">
+    <table>
+      <thead><tr><th>Rol</th><th>Método</th><th>Endpoint</th><th>Descripción</th></tr></thead>
+      <tbody>
+        {% for rol, metodo, ruta, descripcion in endpoints %}
+          <tr>
+            <td class="rol">{{ rol }}</td>
+            <td>{{ metodo }}</td>
+            <td><code>{{ ruta }}</code></td>
+            <td>{{ descripcion }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

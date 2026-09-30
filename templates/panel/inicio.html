@@ -1,0 +1,23 @@
+{% extends "panel/base_panel.html" %}
+{% comment %} Resumen del panel: totales por entidad y ventas por estado. {% endcomment %}
+
+{% block titulo %}Panel de Administración de Flota{% endblock %}
+
+{% block panel %}
+<h2>Panel de Administración de Flota</h2>
+<div class="tarjetas">
+  {% for nombre, total, url in totales %}
+    <a class="tarjeta" href="{% url url %}"><span>{{ total }}</span>{{ nombre }}</a>
+  {% endfor %}
+</div>
+
+<h3>Ventas por estado</h3>
+<div class="tabla">
+<table>
+  <thead><tr><th>Estado</th><th>Cantidad</th></tr></thead>
+  <tbody>
+    {% for estado, cantidad in ventas_por_estado %}<tr><td>{{ estado }}</td><td>{{ cantidad }}</td></tr>{% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

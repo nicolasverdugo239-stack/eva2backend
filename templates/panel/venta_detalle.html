@@ -1,0 +1,54 @@
+{% extends "panel/base_panel.html" %}
+{% comment %}
+Detalle de una venta con sus asientos/boletos y el formulario de cambio
+de estado (solo muestra las transiciones permitidas desde el estado actual).
+{% endcomment %}
+
+{% block titulo %}Venta #{{ object.id }} | Panel{% endblock %}
+
+{% block panel %}
+<div class="barra">
+  <h2>Venta #{{ object.id }} — {{ object.get_estado_display }}</h2>
+  <a href="{% url 'panel:venta_lista' %}">Volver</a>
+</div>
+<p>
+  <strong>Código:</strong> {{ object.codigo }}<br>
+  <strong>Usuario:</strong> {{ object.usuario.username }} &nbsp;|&nbsp;
+  <strong>Total:</strong> ${{ object.total }} &nbsp;|&nbsp;
+  <strong>Creada:</strong> {{ object.creada }} &nbsp;|&nbsp;
+  <strong>Pagada:</strong> {{ object.pagada_en|default:"—" }}
+  {% if object.observacion %}<br><strong>Observación:</strong> {{ object.observacion }}{% endif %}
+</p>
+
+<div class="tabla">
+<table>
+  <thead><tr><th>Servicio</th><th>Asiento</th><th>Tipo</th><th>Pasajero</th><th>Documento</th><th>Precio</th><th>Boleto</th></tr></thead>
+  <tbody>
+  {% for d in detalles %}
+    <tr>
+      <td>{{ d.asiento.servicio.ruta }} ({{ d.asiento.servicio.fecha_salida }})</td>
+      <td>{{ d.asiento.numero }}</td>
+      <td>{{ d.tipo_asiento }}</td>
+      <td>{{ d.nombre_pasajero }}</td>
+      <td>{{ d.tipo_documento }} {{ d.documento_pasajero }}</td>
+      <td>${{ d.precio_unitario }}</td>
+      <td>{% if d.boleto %}{{ d.boleto.codigo }} ({{ d.boleto.get_estado_display }}){% else %}—{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<h3>Cambiar estado</h3>
+{% if form.fields.estado.choices %}
+<form method="post" action="{% url 'panel:venta_estado' object.pk %}" class="filtros">
+  {% csrf_token %}
+  <label>Nuevo estado {{ form.estado }}</label>
+  <label>Observación {{ form.observacion }}</label>
+  <button class="btn" type="submit">Aplicar</button>
+</form>
+<p><small>Al CANCELAR una venta pagada los asientos vuelven a estar disponibles y los boletos quedan anulados.</small></p>
+{% else %}
+<p>La venta está en un estado final ({{ object.get_estado_display }}); no admite más cambios.</p>
+{% endif %}
+{% endblock %}

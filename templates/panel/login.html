@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% comment %}
+Login del panel web (sesión de Django). Es independiente del login JWT
+de la API: el panel es para el Administrador de Flota desde el navegador.
+{% endcomment %}
+
+{% block titulo %}Ingresar al panel{% endblock %}
+
+{% block contenido %}
+<div class="caja-login">
+  <h2>Ingreso Administrador de Flota</h2>
+  <form method="post" class="formulario">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="mensaje error">Usuario o contraseña incorrectos.</div>{% endif %}
+    <div class="fila-form"><label for="id_username">Usuario</label><input class="campo" type="text" name="username" id="id_username" required autofocus></div>
+    <div class="fila-form"><label for="id_password">Contraseña</label><input class="campo" type="password" name="password" id="id_password" required></div>
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="btn" type="submit">Ingresar</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "panel/base_panel.html" %}
+{% comment %} Detalle del servicio con el mapa de asientos (verde = disponible, rojo = ocupado). {% endcomment %}
+
+{% block titulo %}Servicio #{{ object.id }} | Panel{% endblock %}
+
+{% block panel %}
+<div class="barra">
+  <h2>Servicio #{{ object.id }}: {{ object.ruta }}</h2>
+  <span>
+    <a class="btn" href="{% url 'panel:servicio_editar' object.pk %}">Editar</a>
+    <a href="{% url 'panel:servicio_lista' %}">Volver</a>
+  </span>
+</div>
+<p>
+  <strong>Salida:</strong> {{ object.fecha_salida }} &nbsp;|&nbsp;
+  <strong>Llegada estimada:</strong> {{ object.fecha_llegada_estimada }} &nbsp;|&nbsp;
+  <strong>Bus:</strong> {{ object.bus }} &nbsp;|&nbsp;
+  <strong>Estado:</strong> {{ object.get_estado_display }}<br>
+  <strong>Tarifa Semicama:</strong> ${{ object.tarifa_semicama }} &nbsp;|&nbsp;
+  <strong>Tarifa Cama:</strong> ${{ object.tarifa_cama }}
+</p>
+
+<h3>Mapa de asientos</h3>
+<div class="asientos">
+  {% for asiento in asientos %}
+    <div class="asiento {% if asiento.estado == 'OCUPADO' %}ocupado{% else %}libre{% endif %}" title="{{ asiento.get_tipo_display }} - {{ asiento.get_estado_display }}">
+      {{ asiento.numero }}<small>{% if asiento.tipo == 'CAMA' %}C{% else %}S{% endif %}</small>
+    </div>
+  {% endfor %}
+</div>
+<p><small>C = Cama, S = Semicama. Verde: disponible · Rojo: ocupado.</small></p>
+{% endblock %}

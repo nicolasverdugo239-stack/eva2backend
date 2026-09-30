@@ -1,0 +1,87 @@
+{% comment %}
+=====================================================================
+PLANTILLA BASE
+Todas las vistas HTML heredan de aquí. El footer muestra los datos del
+alumno (nombre completo, sección y año) obtenidos del context processor
+pasajes_buses.context_processors.datos_alumno.
+=====================================================================
+{% endcomment %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Pasajes de Buses Interurbanos{% endblock %}</title>
+  <style>
+    :root { --azul: #0b3d91; --gris: #f4f6fa; --borde: #d9dee8; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+           background: var(--gris); color: #1d2433; display: flex; flex-direction: column; min-height: 100vh; }
+    header { background: var(--azul); color: #fff; padding: 1rem 1.5rem; }
+    header h1 { margin: 0; font-size: 1.35rem; }
+    header nav a { color: #cfe0ff; margin-right: 1rem; text-decoration: none; font-size: .9rem; }
+    main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; }
+    table { width: 100%; border-collapse: collapse; background: #fff; font-size: .9rem; }
+    th, td { text-align: left; padding: .55rem .7rem; border-bottom: 1px solid var(--borde); }
+    th { background: #e8edf7; }
+    code { background: #eef1f7; padding: .1rem .3rem; border-radius: 4px; }
+    .tabla { overflow-x: auto; }
+    .rol { font-weight: 600; white-space: nowrap; }
+    footer.alumno { background: #1d2433; color: #e6e9ef; text-align: center; padding: .9rem 1rem; font-size: .9rem; }
+    footer.alumno strong { color: #fff; }
+    /* --- Panel CRUD: botones, formularios, mensajes --- */
+    a { color: var(--azul); }
+    .btn { display: inline-block; background: var(--azul); color: #fff; border: 0; border-radius: 6px;
+           padding: .45rem .9rem; text-decoration: none; cursor: pointer; font: inherit; }
+    .btn-peligro { background: #b3261e; }
+    .barra { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .5rem; }
+    .acciones a { margin-right: .5rem; white-space: nowrap; }
+    .acciones a.peligro { color: #b3261e; }
+    .filtros { display: flex; flex-wrap: wrap; gap: .6rem; align-items: end; background: #fff;
+               border: 1px solid var(--borde); border-radius: 8px; padding: .8rem; margin-bottom: 1rem; }
+    .filtros label { display: flex; flex-direction: column; font-size: .8rem; gap: .2rem; }
+    .formulario { background: #fff; border: 1px solid var(--borde); border-radius: 8px; padding: 1rem; max-width: 560px; }
+    .fila-form { display: flex; flex-direction: column; gap: .25rem; margin-bottom: .85rem; }
+    .fila-form label { font-weight: 600; font-size: .9rem; }
+    .campo, .filtros input, .filtros select { padding: .4rem .5rem; border: 1px solid var(--borde); border-radius: 6px; font: inherit; max-width: 100%; }
+    input[type=checkbox].campo { width: auto; align-self: start; }
+    .error-campo { color: #b3261e; font-size: .85rem; }
+    .mensaje { padding: .6rem .9rem; border-radius: 6px; margin-bottom: 1rem; background: #e6f4ea; color: #1e5631; }
+    .mensaje.error { background: #fdecea; color: #8a1c14; }
+    .mensaje ul { margin: 0; padding-left: 1rem; }
+    .tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: .8rem; margin-bottom: 1.5rem; }
+    .tarjeta { background: #fff; border: 1px solid var(--borde); border-radius: 8px; padding: 1rem; text-decoration: none; color: #1d2433; }
+    .tarjeta span { display: block; font-size: 1.8rem; font-weight: 700; color: var(--azul); }
+    .asientos { display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: .4rem; max-width: 560px; }
+    .asiento { text-align: center; padding: .5rem 0; border-radius: 6px; font-weight: 600; color: #fff; }
+    .asiento small { display: block; font-weight: 400; font-size: .7rem; }
+    .asiento.libre { background: #2e7d32; } .asiento.ocupado { background: #c62828; }
+    .caja-login { max-width: 420px; margin: 2rem auto; }
+    .paginacion a { margin: 0 .5rem; }
+  </style>
+  {% block head_extra %}{% endblock %}
+</head>
+<body>
+  <header>
+    <h1>🚌 Sistema de Pasajes de Buses Interurbanos</h1>
+    <nav>
+      <a href="/">Inicio</a>
+      <a href="/api/docs/">Swagger</a>
+      <a href="/api/redoc/">ReDoc</a>
+      <a href="/api/">API</a>
+      <a href="{% url 'panel:inicio' %}">Panel Flota (CRUD)</a>
+      <a href="/admin/">Admin</a>
+    </nav>
+  </header>
+
+  <main>
+    {% comment %} Mensajes del framework messages (éxito / error de los CRUD). {% endcomment %}
+    {% for mensaje in messages %}
+      <div class="mensaje {% if mensaje.tags == 'error' %}error{% endif %}">{{ mensaje }}</div>
+    {% endfor %}
+    {% block contenido %}{% endblock %}
+  </main>
+
+  {% include "footer_alumno.html" %}
+</body>
+</html>

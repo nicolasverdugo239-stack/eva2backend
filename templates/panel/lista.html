@@ -1,0 +1,56 @@
+{% extends "panel/base_panel.html" %}
+{% comment %}
+Listado genérico del CRUD: filtros (django-filter), tabla y paginación.
+"filas" viene preparado desde PanelListView: [(objeto, [valores...]), ...]
+{% endcomment %}
+
+{% block titulo %}{{ titulo_plural }} | Panel{% endblock %}
+
+{% block panel %}
+<div class="barra">
+  <h2>{{ titulo_plural }}</h2>
+  {% if url_crear %}<a class="btn" href="{% url url_crear %}">+ Nuevo {{ titulo_singular|lower }}</a>{% endif %}
+</div>
+
+{% if filtro %}
+<form method="get" class="filtros">
+  {% for campo in filtro.form %}
+    <label>{{ campo.label }} {{ campo }}</label>
+  {% endfor %}
+  <button class="btn" type="submit">Filtrar</button>
+  <a href="{% url url_lista %}">Limpiar</a>
+</form>
+{% endif %}
+
+<div class="tabla">
+<table>
+  <thead>
+    <tr>{% for titulo in encabezados %}<th>{{ titulo }}</th>{% endfor %}<th>Acciones</th></tr>
+  </thead>
+  <tbody>
+    {% for obj, valores in filas %}
+    <tr>
+      {% for valor in valores %}
+        <td>{% if valor is True %}Sí{% elif valor is False %}No{% elif valor is None %}—{% else %}{{ valor }}{% endif %}</td>
+      {% endfor %}
+      <td class="acciones">
+        {% if url_detalle %}<a href="{% url url_detalle obj.pk %}">Ver</a>{% endif %}
+        {% if url_editar %}<a href="{% url url_editar obj.pk %}">Editar</a>{% endif %}
+        {% if url_eliminar %}<a class="peligro" href="{% url url_eliminar obj.pk %}">Eliminar</a>{% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="{{ encabezados|length|add:1 }}">No hay registros.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+{% if is_paginated %}
+<p class="paginacion">
+  {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&{{ parametros }}">« Anterior</a>{% endif %}
+  Página {{ page_obj.number }} de {{ paginator.num_pages }} ({{ paginator.count }} registros)
+  {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&{{ parametros }}">Siguiente »</a>{% endif %}
+</p>
+{% endif %}
+{% endblock %}

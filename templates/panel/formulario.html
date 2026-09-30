@@ -1,0 +1,26 @@
+{% extends "panel/base_panel.html" %}
+{% comment %}
+Formulario genérico para crear y editar (CreateView / UpdateView).
+"object" existe solo al editar. {% csrf_token %} protege contra CSRF.
+{% endcomment %}
+
+{% block titulo %}{% if object %}Editar{% else %}Nuevo{% endif %} {{ titulo_singular }} | Panel{% endblock %}
+
+{% block panel %}
+<h2>{% if object %}Editar {{ titulo_singular|lower }}: {{ object }}{% else %}Nuevo {{ titulo_singular|lower }}{% endif %}</h2>
+
+<form method="post" class="formulario" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="mensaje error">{{ form.non_field_errors }}</div>{% endif %}
+  {% for campo in form %}
+    <div class="fila-form">
+      <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+      {{ campo }}
+      {% if campo.help_text %}<small>{{ campo.help_text }}</small>{% endif %}
+      {% for error in campo.errors %}<span class="error-campo">{{ error }}</span>{% endfor %}
+    </div>
+  {% endfor %}
+  <button class="btn" type="submit">Guardar</button>
+  <a href="{% url url_lista %}">Cancelar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "panel/base_panel.html" %}
+{% comment %} Confirmación de eliminación (DeleteView). La eliminación solo ocurre con POST. {% endcomment %}
+
+{% block titulo %}Eliminar {{ titulo_singular }} | Panel{% endblock %}
+
+{% block panel %}
+<h2>Eliminar {{ titulo_singular|lower }}</h2>
+<p>¿Seguro que desea eliminar <strong>{{ object }}</strong>? Esta acción no se puede deshacer.</p>
+<form method="post">
+  {% csrf_token %}
+  <button class="btn btn-peligro" type="submit">Sí, eliminar</button>
+  <a href="{% url url_lista %}">Cancelar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% comment %}
+Plantilla base del panel: menú lateral de entidades + contenido.
+Hereda de base.html, por lo que mantiene el footer con los datos del alumno.
+{% endcomment %}
+
+{% block head_extra %}
+<style>
+  .panel { display: grid; grid-template-columns: 200px 1fr; gap: 1.5rem; }
+  .menu { background: #fff; border: 1px solid var(--borde); border-radius: 8px; padding: .5rem; align-self: start; }
+  .menu a { display: block; padding: .5rem .7rem; color: #1d2433; text-decoration: none; border-radius: 6px; }
+  .menu a:hover { background: #e8edf7; }
+  .menu form button { width: 100%; text-align: left; background: none; border: 0; padding: .5rem .7rem; cursor: pointer; color: #b3261e; font: inherit; }
+  @media (max-width: 700px) { .panel { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="panel">
+  <aside class="menu">
+    <a href="{% url 'panel:inicio' %}">📊 Resumen</a>
+    <a href="{% url 'panel:ciudad_lista' %}">🏙️ Ciudades</a>
+    <a href="{% url 'panel:terminal_lista' %}">🚏 Terminales</a>
+    <a href="{% url 'panel:ruta_lista' %}">🛣️ Rutas</a>
+    <a href="{% url 'panel:bus_lista' %}">🚌 Buses</a>
+    <a href="{% url 'panel:servicio_lista' %}">🗓️ Servicios</a>
+    <a href="{% url 'panel:venta_lista' %}">🧾 Ventas</a>
+    <form method="post" action="{% url 'panel:logout' %}">{% csrf_token %}<button type="submit">Cerrar sesión ({{ user.username }})</button></form>
+  </aside>
+  <section>{% block panel %}{% endblock %}</section>
+</div>
+{% endblock %}

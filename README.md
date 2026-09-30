@@ -138,4 +138,4 @@ validación de RUT, checkout con descuento de stock, precio congelado, rechazo p
 vendido, cancelación con reposición de stock y aislamiento de ventas entre usuarios.
 
 ---
-**Alumno:** NOMBRE COMPLETO — **Sección:** SECCIÓN — **Año:** 2026
+**Alumno:** Jonatha — **Sección:** SECCIÓN — **Año:** 2026

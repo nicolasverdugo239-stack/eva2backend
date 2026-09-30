@@ -223,7 +223,7 @@ SPECTACULAR_SETTINGS = {
 # de entorno.
 # ---------------------------------------------------------------------
 DATOS_ALUMNO = {
-    'nombre': os.environ.get('ALUMNO_NOMBRE', 'Jonatha'),
+    'nombre': os.environ.get('ALUMNO_NOMBRE', 'Jonathan Nicolas Verdugo Garrido'),
     'seccion': os.environ.get('ALUMNO_SECCION', 'SECCIÓN'),
     'anio': os.environ.get('ALUMNO_ANIO', '2026'),
 }

@@ -18,7 +18,7 @@ Listado genérico del CRUD: filtros (django-filter), tabla y paginación.
     <label>{{ campo.label }} {{ campo }}</label>
   {% endfor %}
   <button class="btn" type="submit">Filtrar</button>
-  <a href="{% url url_lista %}">Limpiar</a>
+  <a class="btn btn-secundario" href="{% url url_lista %}">Limpiar</a>
 </form>
 {% endif %}
 

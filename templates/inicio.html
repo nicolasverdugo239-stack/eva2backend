@@ -1,29 +1,111 @@
 {% extends "base.html" %}
-{% comment %} Página de inicio: resumen del proyecto y matriz de endpoints por rol. {% endcomment %}
+{% comment %}
+=====================================================================
+PÁGINA DE INICIO
+- Portada con descripción del sistema y accesos rápidos.
+- Tarjetas con las características técnicas principales.
+- Matriz de endpoints agrupada por rol ({% regroup %} sobre el primer
+  elemento de cada tupla de ENDPOINTS, definida en pasajes_buses/views.py).
+=====================================================================
+{% endcomment %}
+
+{% block head_extra %}
+<style>
+  .hero { background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 55%, #2563eb 100%); color: #fff;
+          border-radius: 14px; padding: 2.5rem 2rem; margin-bottom: 2rem; }
+  .hero .etiqueta { display: inline-block; font-size: .75rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+                    background: rgba(255,255,255,.14); padding: .3rem .7rem; border-radius: 999px; margin-bottom: 1rem; }
+  .hero h1 { font-size: clamp(1.6rem, 3.5vw, 2.2rem); font-weight: 700; margin-bottom: .75rem; max-width: 720px; }
+  .hero p { color: #dbeafe; max-width: 680px; font-size: 1.02rem; margin-bottom: 1.5rem; }
+  .hero-acciones { display: flex; flex-wrap: wrap; gap: .6rem; }
+  .hero .btn { background: #fff; color: #1e3a8a; border-color: #fff; }
+  .hero .btn:hover { background: #eff4ff; }
+  .hero .btn-secundario { background: transparent; color: #fff; border-color: rgba(255,255,255,.45); }
+  .hero .btn-secundario:hover { background: rgba(255,255,255,.1); }
+
+  .caracteristicas { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 2.5rem; }
+  .caracteristica { background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio); padding: 1.25rem; box-shadow: var(--sombra); }
+  .caracteristica h3 { margin: .75rem 0 .35rem; font-size: .98rem; }
+  .caracteristica p { margin: 0; color: var(--texto-2); font-size: .9rem; }
+  .icono { width: 36px; height: 36px; border-radius: 9px; background: var(--primario-suave); color: var(--primario); display: grid; place-items: center; }
+
+  .seccion-titulo { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .5rem; margin-bottom: 1rem; }
+  .seccion-titulo h2 { margin: 0; }
+  .seccion-titulo p { margin: 0; color: var(--texto-2); font-size: .9rem; }
+
+  .grupo-rol td { background: #f8fafc; font-weight: 600; font-size: .85rem; padding-top: .55rem; padding-bottom: .55rem; }
+  .pastilla { display: inline-block; font-size: .72rem; font-weight: 600; padding: .18rem .55rem; border-radius: 999px; white-space: nowrap; }
+  .pastilla.publico { background: #f1f5f9; color: #334155; }
+  .pastilla.pasajero { background: #ecfdf5; color: #047857; }
+  .pastilla.admin { background: #eff4ff; color: #1e40af; }
+  .metodo { font-family: ui-monospace, Consolas, monospace; font-size: .75rem; font-weight: 600; color: var(--texto-2); white-space: nowrap; }
+  td code { background: transparent; padding: 0; color: var(--texto); }
+</style>
+{% endblock %}
 
 {% block contenido %}
-  <h2>API REST — Proyecto 4: Reservas de Pasajes de Buses (Transporte)</h2>
-  <p>
-    Backend construido con Django REST Framework y PostgreSQL. Autenticación JWT con claim de rol
-    (<code>PASAJERO</code> / <code>ADMIN_FLOTA</code>), carro de pasajes persistente en base de datos,
-    checkout con verificación atómica de asientos y emisión de boletos con código UUID.
-  </p>
-  <p>Documentación interactiva: <a href="/api/docs/">/api/docs/</a></p>
+  <section class="hero">
+    <span class="etiqueta">Proyecto 4 · Transporte</span>
+    <h1>Reserva de pasajes de buses interurbanos</h1>
+    <p>
+      API REST construida con Django REST Framework y PostgreSQL. Búsqueda de servicios por origen y destino,
+      carro de pasajes persistente, checkout con verificación atómica de asientos y emisión de boletos con código único.
+    </p>
+    <div class="hero-acciones">
+      <a class="btn" href="/api/docs/">Ver documentación de la API</a>
+      <a class="btn btn-secundario" href="{% url 'panel:inicio' %}">Ir al panel de flota</a>
+    </div>
+  </section>
 
-  <h3>Matriz de roles y permisos</h3>
-  <div class="tabla">
-    <table>
-      <thead><tr><th>Rol</th><th>Método</th><th>Endpoint</th><th>Descripción</th></tr></thead>
-      <tbody>
-        {% for rol, metodo, ruta, descripcion in endpoints %}
-          <tr>
-            <td class="rol">{{ rol }}</td>
-            <td>{{ metodo }}</td>
-            <td><code>{{ ruta }}</code></td>
-            <td>{{ descripcion }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+  <section class="caracteristicas">
+    <article class="caracteristica">
+      <span class="icono"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+      <h3>Autenticación JWT por rol</h3>
+      <p>Tokens access y refresh con el rol del usuario (Pasajero / Administrador de Flota) incluido en el payload.</p>
+    </article>
+    <article class="caracteristica">
+      <span class="icono"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.5L21 8H6"/></svg></span>
+      <h3>Carro persistente</h3>
+      <p>El carro vive en PostgreSQL con relación 1 a 1 al usuario y se conserva tras cerrar sesión o cambiar de dispositivo.</p>
+    </article>
+    <article class="caracteristica">
+      <span class="icono"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span>
+      <h3>Transacciones atómicas</h3>
+      <p>Los asientos se descuentan solo al pasar a PAGADO, con bloqueo de filas; al cancelar vuelven a estar disponibles.</p>
+    </article>
+    <article class="caracteristica">
+      <span class="icono"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg></span>
+      <h3>Filtros y búsqueda</h3>
+      <p>Filtrado con django-filter por origen, destino, fecha, rango de tarifa, tipo de asiento y disponibilidad.</p>
+    </article>
+  </section>
+
+  <section>
+    <div class="seccion-titulo">
+      <h2>Endpoints por rol</h2>
+      <p>Pruébelos de forma interactiva en <a href="/api/docs/">/api/docs/</a></p>
+    </div>
+    <div class="tabla">
+      <table>
+        <thead><tr><th>Método</th><th>Endpoint</th><th>Descripción</th></tr></thead>
+        <tbody>
+          {% regroup endpoints by 0 as grupos %}
+          {% for grupo in grupos %}
+            <tr class="grupo-rol">
+              <td colspan="3">
+                <span class="pastilla {% if grupo.grouper == 'Público' %}publico{% elif grupo.grouper == 'Pasajero' %}pasajero{% else %}admin{% endif %}">{{ grupo.grouper }}</span>
+              </td>
+            </tr>
+            {% for rol, metodo, ruta, descripcion in grupo.list %}
+              <tr>
+                <td class="metodo">{{ metodo }}</td>
+                <td><code>{{ ruta }}</code></td>
+                <td>{{ descripcion }}</td>
+              </tr>
+            {% endfor %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
 {% endblock %}

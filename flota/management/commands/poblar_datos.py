@@ -26,11 +26,21 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **options):
         # --- Bloque: usuarios de prueba --------------------------------
-        if not Usuario.objects.filter(username='admin_flota').exists():
-            Usuario.objects.create_superuser('admin_flota', 'admin@buses.cl', 'Admin12345!')
-        for nombre in ('pasajero1', 'pasajero2'):
-            if not Usuario.objects.filter(username=nombre).exists():
-                Usuario.objects.create_user(nombre, f'{nombre}@correo.cl', 'Pasajero123!', rol=Usuario.Rol.PASAJERO)
+        # Si el usuario ya existía (BD reutilizada), se restablecen su
+        # contraseña y rol para que las credenciales de demo siempre sirvan.
+        usuarios_demo = [
+            ('admin_flota', 'admin@buses.cl', 'Admin12345!', Usuario.Rol.ADMIN_FLOTA, True),
+            ('pasajero1', 'pasajero1@correo.cl', 'Pasajero123!', Usuario.Rol.PASAJERO, False),
+            ('pasajero2', 'pasajero2@correo.cl', 'Pasajero123!', Usuario.Rol.PASAJERO, False),
+        ]
+        for username, email, clave, rol, es_super in usuarios_demo:
+            usuario, _ = Usuario.objects.get_or_create(username=username, defaults={'email': email})
+            usuario.rol = rol
+            usuario.is_superuser = es_super
+            usuario.is_staff = es_super
+            usuario.is_active = True
+            usuario.set_password(clave)
+            usuario.save()
 
         # --- Bloque: ciudades y terminales -----------------------------
         datos_ciudades = [

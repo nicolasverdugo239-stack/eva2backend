@@ -4,6 +4,7 @@ PLANTILLA BASE
 Todas las vistas HTML heredan de aquí. El footer muestra los datos del
 alumno (nombre completo, sección y año) obtenidos del context processor
 pasajes_buses.context_processors.datos_alumno.
+El menú marca como activa la sección según request.path.
 =====================================================================
 {% endcomment %}
 <!DOCTYPE html>
@@ -12,66 +13,170 @@ pasajes_buses.context_processors.datos_alumno.
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block titulo %}Pasajes de Buses Interurbanos{% endblock %}</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%231e40af'/%3E%3Cpath d='M6 7h12v8H6z M6 15h12v2H6z' fill='white'/%3E%3C/svg%3E">
   <style>
-    :root { --azul: #0b3d91; --gris: #f4f6fa; --borde: #d9dee8; }
+    /* -----------------------------------------------------------------
+       BLOQUE: Tokens de diseño (colores, radios, sombras)
+       ----------------------------------------------------------------- */
+    :root {
+      --primario: #1e40af;
+      --primario-hover: #1e3a8a;
+      --primario-suave: #eff4ff;
+      --texto: #0f172a;
+      --texto-2: #475569;
+      --texto-3: #94a3b8;
+      --fondo: #f8fafc;
+      --superficie: #ffffff;
+      --borde: #e2e8f0;
+      --exito: #15803d;
+      --exito-suave: #f0fdf4;
+      --peligro: #b91c1c;
+      --peligro-suave: #fef2f2;
+      --radio: 10px;
+      --sombra: 0 1px 2px rgba(15, 23, 42, .05), 0 1px 3px rgba(15, 23, 42, .06);
+      --azul: var(--primario); /* alias usado por plantillas antiguas */
+    }
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-           background: var(--gris); color: #1d2433; display: flex; flex-direction: column; min-height: 100vh; }
-    header { background: var(--azul); color: #fff; padding: 1rem 1.5rem; }
-    header h1 { margin: 0; font-size: 1.35rem; }
-    header nav a { color: #cfe0ff; margin-right: 1rem; text-decoration: none; font-size: .9rem; }
-    main { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; }
-    table { width: 100%; border-collapse: collapse; background: #fff; font-size: .9rem; }
-    th, td { text-align: left; padding: .55rem .7rem; border-bottom: 1px solid var(--borde); }
-    th { background: #e8edf7; }
-    code { background: #eef1f7; padding: .1rem .3rem; border-radius: 4px; }
-    .tabla { overflow-x: auto; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 15px; line-height: 1.55; color: var(--texto); background: var(--fondo);
+    }
+    h1, h2, h3 { line-height: 1.25; margin: 0 0 .75rem; letter-spacing: -.01em; }
+    h2 { font-size: 1.45rem; font-weight: 650; }
+    h3 { font-size: 1.05rem; font-weight: 600; margin-top: 2rem; }
+    p { margin: 0 0 1rem; }
+    a { color: var(--primario); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    small { color: var(--texto-2); }
+    code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: .85em;
+           background: #f1f5f9; color: #334155; padding: .12rem .4rem; border-radius: 5px; }
+
+    /* -----------------------------------------------------------------
+       BLOQUE: Encabezado y navegación
+       ----------------------------------------------------------------- */
+    .topbar { background: var(--superficie); border-bottom: 1px solid var(--borde); position: sticky; top: 0; z-index: 10; }
+    .topbar-inner { max-width: 1160px; margin: 0 auto; padding: 0 1rem; height: 62px;
+                    display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .marca { display: flex; align-items: center; gap: .6rem; color: var(--texto); font-weight: 700; font-size: 1.05rem; }
+    .marca:hover { text-decoration: none; }
+    .marca-logo { width: 32px; height: 32px; border-radius: 8px; background: var(--primario);
+                  display: grid; place-items: center; flex-shrink: 0; }
+    .marca small { display: block; font-weight: 450; font-size: .75rem; color: var(--texto-2); line-height: 1.1; }
+    .nav { display: flex; gap: .25rem; overflow-x: auto; }
+    .nav a { color: var(--texto-2); font-size: .9rem; font-weight: 500; padding: .45rem .75rem;
+             border-radius: 7px; white-space: nowrap; }
+    .nav a:hover { background: #f1f5f9; color: var(--texto); text-decoration: none; }
+    .nav a.activo { background: var(--primario-suave); color: var(--primario); }
+    @media (max-width: 640px) {
+      .topbar-inner { height: auto; padding: .7rem 1rem; flex-direction: column; align-items: flex-start; gap: .5rem; }
+      .nav { width: 100%; margin: 0 -.75rem; }
+    }
+
+    /* -----------------------------------------------------------------
+       BLOQUE: Contenido principal
+       ----------------------------------------------------------------- */
+    main { flex: 1; width: 100%; max-width: 1160px; margin: 0 auto; padding: 2rem 1rem 3rem; }
+
+    /* Tablas */
+    .tabla { overflow-x: auto; background: var(--superficie); border: 1px solid var(--borde);
+             border-radius: var(--radio); box-shadow: var(--sombra); }
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    th, td { text-align: left; padding: .7rem 1rem; border-bottom: 1px solid var(--borde); vertical-align: top; }
+    th { background: #f8fafc; color: var(--texto-2); font-size: .75rem; font-weight: 600;
+         text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover td { background: #fafbfd; }
     .rol { font-weight: 600; white-space: nowrap; }
-    footer.alumno { background: #1d2433; color: #e6e9ef; text-align: center; padding: .9rem 1rem; font-size: .9rem; }
-    footer.alumno strong { color: #fff; }
-    /* --- Panel CRUD: botones, formularios, mensajes --- */
-    a { color: var(--azul); }
-    .btn { display: inline-block; background: var(--azul); color: #fff; border: 0; border-radius: 6px;
-           padding: .45rem .9rem; text-decoration: none; cursor: pointer; font: inherit; }
-    .btn-peligro { background: #b3261e; }
-    .barra { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .5rem; }
-    .acciones a { margin-right: .5rem; white-space: nowrap; }
-    .acciones a.peligro { color: #b3261e; }
-    .filtros { display: flex; flex-wrap: wrap; gap: .6rem; align-items: end; background: #fff;
-               border: 1px solid var(--borde); border-radius: 8px; padding: .8rem; margin-bottom: 1rem; }
-    .filtros label { display: flex; flex-direction: column; font-size: .8rem; gap: .2rem; }
-    .formulario { background: #fff; border: 1px solid var(--borde); border-radius: 8px; padding: 1rem; max-width: 560px; }
-    .fila-form { display: flex; flex-direction: column; gap: .25rem; margin-bottom: .85rem; }
-    .fila-form label { font-weight: 600; font-size: .9rem; }
-    .campo, .filtros input, .filtros select { padding: .4rem .5rem; border: 1px solid var(--borde); border-radius: 6px; font: inherit; max-width: 100%; }
-    input[type=checkbox].campo { width: auto; align-self: start; }
-    .error-campo { color: #b3261e; font-size: .85rem; }
-    .mensaje { padding: .6rem .9rem; border-radius: 6px; margin-bottom: 1rem; background: #e6f4ea; color: #1e5631; }
-    .mensaje.error { background: #fdecea; color: #8a1c14; }
+
+    /* Botones */
+    .btn { display: inline-flex; align-items: center; gap: .35rem; background: var(--primario); color: #fff;
+           border: 1px solid var(--primario); border-radius: 8px; padding: .5rem 1rem; cursor: pointer;
+           font: inherit; font-size: .9rem; font-weight: 550; line-height: 1.2; transition: background .15s; }
+    .btn:hover { background: var(--primario-hover); text-decoration: none; }
+    .btn-secundario { background: var(--superficie); color: var(--texto); border-color: var(--borde); }
+    .btn-secundario:hover { background: #f1f5f9; }
+    .btn-peligro { background: var(--peligro); border-color: var(--peligro); }
+    .btn-peligro:hover { background: #991b1b; }
+
+    .barra { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .75rem; margin-bottom: 1.25rem; }
+    .barra h2 { margin: 0; }
+    .acciones a { margin-right: .75rem; white-space: nowrap; font-weight: 500; }
+    .acciones a.peligro { color: var(--peligro); }
+
+    /* Filtros y formularios */
+    .filtros { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; background: var(--superficie);
+               border: 1px solid var(--borde); border-radius: var(--radio); padding: 1rem; margin-bottom: 1.25rem; box-shadow: var(--sombra); }
+    .filtros label { display: flex; flex-direction: column; font-size: .78rem; font-weight: 550; color: var(--texto-2); gap: .3rem; }
+    .formulario { background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio);
+                  padding: 1.5rem; max-width: 580px; box-shadow: var(--sombra); }
+    .formulario .btn + a { margin-left: .75rem; }
+    .fila-form { display: flex; flex-direction: column; gap: .3rem; margin-bottom: 1rem; }
+    .fila-form label { font-weight: 550; font-size: .88rem; }
+    .campo, .filtros input, .filtros select, .formulario input:not([type=checkbox]):not([type=hidden]), .formulario select, .formulario textarea {
+      padding: .55rem .7rem; border: 1px solid #cbd5e1; border-radius: 8px; font: inherit; font-size: .92rem;
+      background: #fff; color: var(--texto); max-width: 100%; transition: border-color .15s, box-shadow .15s;
+    }
+    .campo:focus, .filtros input:focus, .filtros select:focus, .formulario input:focus, .formulario select:focus, .formulario textarea:focus {
+      outline: none; border-color: var(--primario); box-shadow: 0 0 0 3px rgba(30, 64, 175, .15);
+    }
+    input[type=checkbox] { width: 1.05rem; height: 1.05rem; accent-color: var(--primario); align-self: start; }
+    .error-campo { color: var(--peligro); font-size: .83rem; }
+
+    /* Mensajes */
+    .mensaje { padding: .75rem 1rem; border-radius: 8px; margin-bottom: 1.25rem; font-size: .92rem;
+               background: var(--exito-suave); color: var(--exito); border: 1px solid #bbf7d0; }
+    .mensaje.error { background: var(--peligro-suave); color: var(--peligro); border-color: #fecaca; }
     .mensaje ul { margin: 0; padding-left: 1rem; }
-    .tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: .8rem; margin-bottom: 1.5rem; }
-    .tarjeta { background: #fff; border: 1px solid var(--borde); border-radius: 8px; padding: 1rem; text-decoration: none; color: #1d2433; }
-    .tarjeta span { display: block; font-size: 1.8rem; font-weight: 700; color: var(--azul); }
-    .asientos { display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: .4rem; max-width: 560px; }
-    .asiento { text-align: center; padding: .5rem 0; border-radius: 6px; font-weight: 600; color: #fff; }
-    .asiento small { display: block; font-weight: 400; font-size: .7rem; }
-    .asiento.libre { background: #2e7d32; } .asiento.ocupado { background: #c62828; }
-    .caja-login { max-width: 420px; margin: 2rem auto; }
-    .paginacion a { margin: 0 .5rem; }
+
+    /* Tarjetas de resumen */
+    .tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .9rem; margin-bottom: 1.5rem; }
+    .tarjeta { background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio); padding: 1.1rem 1.2rem;
+               color: var(--texto-2); font-size: .88rem; box-shadow: var(--sombra); transition: border-color .15s, transform .15s; }
+    .tarjeta:hover { border-color: var(--primario); text-decoration: none; transform: translateY(-1px); }
+    .tarjeta span { display: block; font-size: 1.9rem; font-weight: 700; color: var(--texto); line-height: 1.2; }
+
+    /* Ficha de datos (detalle de servicio / venta) */
+    .ficha { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem 1.5rem;
+             background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio);
+             padding: 1.25rem; margin: 0 0 1.5rem; box-shadow: var(--sombra); }
+    .ficha dt { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--texto-3); }
+    .ficha dd { margin: .15rem 0 0; font-weight: 500; word-break: break-word; }
+
+    /* Mapa de asientos */
+    .asientos { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: .5rem; max-width: 620px; }
+    .asiento { text-align: center; padding: .55rem 0; border-radius: 8px; font-weight: 650; font-size: .9rem; border: 1px solid; }
+    .asiento small { display: block; font-weight: 500; font-size: .68rem; color: inherit; opacity: .8; }
+    .asiento.libre { background: var(--exito-suave); color: var(--exito); border-color: #bbf7d0; }
+    .asiento.ocupado { background: var(--peligro-suave); color: var(--peligro); border-color: #fecaca; }
+
+    .caja-login { max-width: 400px; margin: 2rem auto; }
+    .caja-login .formulario { max-width: none; }
+    .caja-login .btn { width: 100%; justify-content: center; padding: .65rem 1rem; }
+    .paginacion { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-top: 1rem; color: var(--texto-2); font-size: .9rem; }
+
+    /* Footer (los estilos base viven en footer_alumno.html para que también sirvan en Swagger) */
+    footer.alumno strong { color: #fff; }
   </style>
   {% block head_extra %}{% endblock %}
 </head>
 <body>
-  <header>
-    <h1>🚌 Sistema de Pasajes de Buses Interurbanos</h1>
-    <nav>
-      <a href="/">Inicio</a>
-      <a href="/api/docs/">Swagger</a>
-      <a href="/api/redoc/">ReDoc</a>
-      <a href="/api/">API</a>
-      <a href="{% url 'panel:inicio' %}">Panel Flota (CRUD)</a>
-      <a href="/admin/">Admin</a>
-    </nav>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="marca" href="/">
+        <span class="marca-logo" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="15" rx="2"/><path d="M4 11h16"/><path d="M8 18v2"/><path d="M16 18v2"/><circle cx="8" cy="14.5" r=".6" fill="#fff"/><circle cx="16" cy="14.5" r=".6" fill="#fff"/></svg>
+        </span>
+        <span>Buses Interurbanos<small>Sistema de reserva de pasajes</small></span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="{% if request.path == '/' %}activo{% endif %}">Inicio</a>
+        <a href="/api/docs/">Documentación API</a>
+        <a href="{% url 'panel:inicio' %}" class="{% if '/panel/' in request.path %}activo{% endif %}">Panel de flota</a>
+        <a href="/admin/">Admin</a>
+      </nav>
+    </div>
   </header>
 
   <main>

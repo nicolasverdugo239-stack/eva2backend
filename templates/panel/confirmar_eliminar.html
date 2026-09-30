@@ -5,10 +5,10 @@
 
 {% block panel %}
 <h2>Eliminar {{ titulo_singular|lower }}</h2>
-<p>¿Seguro que desea eliminar <strong>{{ object }}</strong>? Esta acción no se puede deshacer.</p>
-<form method="post">
+<form method="post" class="formulario">
   {% csrf_token %}
+  <p>¿Seguro que desea eliminar <strong>{{ object }}</strong>? Esta acción no se puede deshacer.</p>
   <button class="btn btn-peligro" type="submit">Sí, eliminar</button>
-  <a href="{% url url_lista %}">Cancelar</a>
+  <a class="btn btn-secundario" href="{% url url_lista %}">Cancelar</a>
 </form>
 {% endblock %}

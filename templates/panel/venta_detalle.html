@@ -9,16 +9,16 @@ de estado (solo muestra las transiciones permitidas desde el estado actual).
 {% block panel %}
 <div class="barra">
   <h2>Venta #{{ object.id }} — {{ object.get_estado_display }}</h2>
-  <a href="{% url 'panel:venta_lista' %}">Volver</a>
+  <a class="btn btn-secundario" href="{% url 'panel:venta_lista' %}">Volver</a>
 </div>
-<p>
-  <strong>Código:</strong> {{ object.codigo }}<br>
-  <strong>Usuario:</strong> {{ object.usuario.username }} &nbsp;|&nbsp;
-  <strong>Total:</strong> ${{ object.total }} &nbsp;|&nbsp;
-  <strong>Creada:</strong> {{ object.creada }} &nbsp;|&nbsp;
-  <strong>Pagada:</strong> {{ object.pagada_en|default:"—" }}
-  {% if object.observacion %}<br><strong>Observación:</strong> {{ object.observacion }}{% endif %}
-</p>
+<dl class="ficha">
+  <div><dt>Código</dt><dd><code>{{ object.codigo }}</code></dd></div>
+  <div><dt>Usuario</dt><dd>{{ object.usuario.username }}</dd></div>
+  <div><dt>Total</dt><dd>${{ object.total }}</dd></div>
+  <div><dt>Creada</dt><dd>{{ object.creada }}</dd></div>
+  <div><dt>Pagada</dt><dd>{{ object.pagada_en|default:"—" }}</dd></div>
+  {% if object.observacion %}<div><dt>Observación</dt><dd>{{ object.observacion }}</dd></div>{% endif %}
+</dl>
 
 <div class="tabla">
 <table>

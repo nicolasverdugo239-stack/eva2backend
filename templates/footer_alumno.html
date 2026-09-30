@@ -1,7 +1,14 @@
-{% comment %} Footer reutilizable con los datos del alumno (base.html y Swagger). {% endcomment %}
-<footer class="alumno" style="background:#1d2433;color:#e6e9ef;text-align:center;padding:.9rem 1rem;font-size:.9rem;font-family:system-ui,sans-serif;">
-  Desarrollado por <strong style="color:#fff;">{{ alumno.nombre }}</strong>
-  &nbsp;|&nbsp; Sección: <strong style="color:#fff;">{{ alumno.seccion }}</strong>
-  &nbsp;|&nbsp; Año: <strong style="color:#fff;">{{ alumno.anio }}</strong>
-  &nbsp;|&nbsp; Desarrollo Backend — EVA-2
+{% comment %}
+Footer reutilizable con los datos del alumno (base.html y Swagger).
+Los estilos van en línea porque Swagger (/api/docs/) no carga base.html.
+{% endcomment %}
+<footer class="alumno" style="background:#0f172a;color:#cbd5e1;font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:.88rem;border-top:1px solid #1e293b;">
+  <div style="max-width:1160px;margin:0 auto;padding:1.1rem 1rem;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.5rem 1.5rem;">
+    <span>Desarrollado por <strong style="color:#fff;">{{ alumno.nombre }}</strong></span>
+    <span style="display:flex;flex-wrap:wrap;gap:.35rem 1.25rem;">
+      <span>Sección <strong style="color:#fff;">{{ alumno.seccion }}</strong></span>
+      <span>Año <strong style="color:#fff;">{{ alumno.anio }}</strong></span>
+      <span style="color:#94a3b8;">Desarrollo Backend · EVA-2</span>
+    </span>
+  </div>
 </footer>

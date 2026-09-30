@@ -2,30 +2,48 @@
 {% comment %}
 Plantilla base del panel: menú lateral de entidades + contenido.
 Hereda de base.html, por lo que mantiene el footer con los datos del alumno.
+El enlace activo del menú se marca comparando request.path.
 {% endcomment %}
 
 {% block head_extra %}
 <style>
-  .panel { display: grid; grid-template-columns: 200px 1fr; gap: 1.5rem; }
-  .menu { background: #fff; border: 1px solid var(--borde); border-radius: 8px; padding: .5rem; align-self: start; }
-  .menu a { display: block; padding: .5rem .7rem; color: #1d2433; text-decoration: none; border-radius: 6px; }
-  .menu a:hover { background: #e8edf7; }
-  .menu form button { width: 100%; text-align: left; background: none; border: 0; padding: .5rem .7rem; cursor: pointer; color: #b3261e; font: inherit; }
-  @media (max-width: 700px) { .panel { grid-template-columns: 1fr; } }
+  .panel { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 2rem; }
+  .menu { background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio);
+          padding: .6rem; align-self: start; position: sticky; top: 80px; box-shadow: var(--sombra); }
+  .menu-titulo { font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+                 color: var(--texto-3); padding: .5rem .7rem .35rem; }
+  .menu a { display: block; padding: .5rem .7rem; color: var(--texto-2); font-size: .9rem; font-weight: 500; border-radius: 7px; }
+  .menu a:hover { background: #f1f5f9; color: var(--texto); text-decoration: none; }
+  .menu a.activo { background: var(--primario-suave); color: var(--primario); }
+  .menu-usuario { border-top: 1px solid var(--borde); margin-top: .5rem; padding: .7rem .7rem .2rem; font-size: .82rem; color: var(--texto-2); }
+  .menu-usuario strong { display: block; color: var(--texto); font-size: .88rem; }
+  .menu form button { margin-top: .5rem; background: none; border: 0; padding: 0; cursor: pointer; color: var(--peligro); font: inherit; font-size: .85rem; font-weight: 500; }
+  .menu form button:hover { text-decoration: underline; }
+  @media (max-width: 760px) {
+    .panel { grid-template-columns: 1fr; gap: 1.25rem; }
+    .menu { position: static; }
+  }
 </style>
 {% endblock %}
 
 {% block contenido %}
 <div class="panel">
   <aside class="menu">
-    <a href="{% url 'panel:inicio' %}">📊 Resumen</a>
-    <a href="{% url 'panel:ciudad_lista' %}">🏙️ Ciudades</a>
-    <a href="{% url 'panel:terminal_lista' %}">🚏 Terminales</a>
-    <a href="{% url 'panel:ruta_lista' %}">🛣️ Rutas</a>
-    <a href="{% url 'panel:bus_lista' %}">🚌 Buses</a>
-    <a href="{% url 'panel:servicio_lista' %}">🗓️ Servicios</a>
-    <a href="{% url 'panel:venta_lista' %}">🧾 Ventas</a>
-    <form method="post" action="{% url 'panel:logout' %}">{% csrf_token %}<button type="submit">Cerrar sesión ({{ user.username }})</button></form>
+    <div class="menu-titulo">General</div>
+    <a href="{% url 'panel:inicio' %}" class="{% if request.path == '/panel/' %}activo{% endif %}">Resumen</a>
+    <div class="menu-titulo">Catálogo</div>
+    <a href="{% url 'panel:ciudad_lista' %}" class="{% if '/ciudades/' in request.path %}activo{% endif %}">Ciudades</a>
+    <a href="{% url 'panel:terminal_lista' %}" class="{% if '/terminales/' in request.path %}activo{% endif %}">Terminales</a>
+    <a href="{% url 'panel:ruta_lista' %}" class="{% if '/rutas/' in request.path %}activo{% endif %}">Rutas</a>
+    <a href="{% url 'panel:bus_lista' %}" class="{% if '/buses/' in request.path %}activo{% endif %}">Buses</a>
+    <a href="{% url 'panel:servicio_lista' %}" class="{% if '/servicios/' in request.path %}activo{% endif %}">Servicios</a>
+    <div class="menu-titulo">Operación</div>
+    <a href="{% url 'panel:venta_lista' %}" class="{% if '/ventas/' in request.path %}activo{% endif %}">Ventas</a>
+    <div class="menu-usuario">
+      Sesión iniciada como
+      <strong>{{ user.username }}</strong>
+      <form method="post" action="{% url 'panel:logout' %}">{% csrf_token %}<button type="submit">Cerrar sesión</button></form>
+    </div>
   </aside>
   <section>{% block panel %}{% endblock %}</section>
 </div>

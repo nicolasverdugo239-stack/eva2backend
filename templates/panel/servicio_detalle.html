@@ -7,18 +7,18 @@
 <div class="barra">
   <h2>Servicio #{{ object.id }}: {{ object.ruta }}</h2>
   <span>
+    <a class="btn btn-secundario" href="{% url 'panel:servicio_lista' %}">Volver</a>
     <a class="btn" href="{% url 'panel:servicio_editar' object.pk %}">Editar</a>
-    <a href="{% url 'panel:servicio_lista' %}">Volver</a>
   </span>
 </div>
-<p>
-  <strong>Salida:</strong> {{ object.fecha_salida }} &nbsp;|&nbsp;
-  <strong>Llegada estimada:</strong> {{ object.fecha_llegada_estimada }} &nbsp;|&nbsp;
-  <strong>Bus:</strong> {{ object.bus }} &nbsp;|&nbsp;
-  <strong>Estado:</strong> {{ object.get_estado_display }}<br>
-  <strong>Tarifa Semicama:</strong> ${{ object.tarifa_semicama }} &nbsp;|&nbsp;
-  <strong>Tarifa Cama:</strong> ${{ object.tarifa_cama }}
-</p>
+<dl class="ficha">
+  <div><dt>Salida</dt><dd>{{ object.fecha_salida }}</dd></div>
+  <div><dt>Llegada estimada</dt><dd>{{ object.fecha_llegada_estimada }}</dd></div>
+  <div><dt>Bus</dt><dd>{{ object.bus }}</dd></div>
+  <div><dt>Estado</dt><dd>{{ object.get_estado_display }}</dd></div>
+  <div><dt>Tarifa Semicama</dt><dd>${{ object.tarifa_semicama }}</dd></div>
+  <div><dt>Tarifa Cama</dt><dd>${{ object.tarifa_cama }}</dd></div>
+</dl>
 
 <h3>Mapa de asientos</h3>
 <div class="asientos">

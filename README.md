@@ -138,4 +138,4 @@ validación de RUT, checkout con descuento de stock, precio congelado, rechazo p
 vendido, cancelación con reposición de stock y aislamiento de ventas entre usuarios.
 
 ---
-**Alumno:** Jonathan Nicolas Verdugo Garrido — **Sección:** SECCIÓN — **Año:** 2026
+**Alumno:** Jonathan Nicolas Verdugo Garrido — **Sección:** IEC-N4-C1 — **Año:** 2026

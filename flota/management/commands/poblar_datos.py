@@ -3,9 +3,9 @@
 COMANDO: python manage.py poblar_datos
 =====================================================================
 Carga datos de demostración (idempotente, se puede ejecutar varias veces):
-  - Usuarios:  admin_flota / Admin12345!   (rol ADMIN_FLOTA, superusuario)
-               pasajero1   / Pasajero123!  (rol PASAJERO)
-               pasajero2   / Pasajero123!  (rol PASAJERO)
+  - Usuarios:  admin       / Acuerdate.0098  (rol ADMIN_FLOTA, superusuario)
+               pasajero1   / Pasajero123!   (rol PASAJERO)
+               pasajero2   / Pasajero123!   (rol PASAJERO)
   - Ciudades, terminales, rutas y buses.
   - Servicios de los próximos días (los asientos se generan por señal).
 """
@@ -29,7 +29,7 @@ class Command(BaseCommand):
         # Si el usuario ya existía (BD reutilizada), se restablecen su
         # contraseña y rol para que las credenciales de demo siempre sirvan.
         usuarios_demo = [
-            ('admin_flota', 'admin@buses.cl', 'Admin12345!', Usuario.Rol.ADMIN_FLOTA, True),
+            ('admin', 'admin@buses.cl', 'Acuerdate.0098', Usuario.Rol.ADMIN_FLOTA, True),
             ('pasajero1', 'pasajero1@correo.cl', 'Pasajero123!', Usuario.Rol.PASAJERO, False),
             ('pasajero2', 'pasajero2@correo.cl', 'Pasajero123!', Usuario.Rol.PASAJERO, False),
         ]
@@ -105,5 +105,5 @@ class Command(BaseCommand):
             self.stdout.write(f'Servicios creados: {contador}')
 
         self.stdout.write(self.style.SUCCESS(
-            'Datos cargados. Usuarios: admin_flota/Admin12345!  pasajero1/Pasajero123!  pasajero2/Pasajero123!'
+            'Datos cargados. Usuarios: admin/Acuerdate.0098  pasajero1/Pasajero123!  pasajero2/Pasajero123!'
         ))

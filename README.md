@@ -35,7 +35,7 @@ Variables de entorno soportadas: `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`,
 ### Usuarios de prueba (`poblar_datos`)
 | Usuario | Contraseña | Rol |
 |---|---|---|
-| admin_flota | Admin12345! | ADMIN_FLOTA (también superusuario de /admin/) |
+| admin | Acuerdate.0098 | ADMIN_FLOTA (también superusuario de /admin/) |
 | pasajero1 | Pasajero123! | PASAJERO |
 | pasajero2 | Pasajero123! | PASAJERO |
 
